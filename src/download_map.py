@@ -7,7 +7,6 @@ from http.cookiejar import CookieJar
 import secrets
 import time
 import base64
-import buffer
 import hmac
 import hashlib
 from rc4 import decrypt, encrypt
