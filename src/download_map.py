@@ -1,15 +1,12 @@
 import requests 
-import zlib
 import json
-from Crypto.Hash import MD5
-from Crypto.Hash import SHA256
-from http.cookiejar import CookieJar
+from Crypto.Hash import MD5, SHA256
 import secrets
-import time
 import base64
 import hmac
 import hashlib
-from rc4 import decrypt, encrypt
+import yaml
+import argparse
 
 userName = ""
 deviceId = ""
@@ -37,7 +34,7 @@ def login():
     response = requests.get(
         'https://account.xiaomi.com/pass/serviceLogin?sid=xiaomiio&_json=true',
         headers = headers,
-        verify=False
+        #verify=False
     )
     if(response.status_code == 200):
         content = parseJson(response.text)
@@ -55,7 +52,7 @@ def login():
             'https://account.xiaomi.com/pass/serviceLoginAuth2',
             headers=headers,
             data=payload,
-            verify=False
+            #verify=False
         )
         if (loginResponse.status_code == 200):
             jsonData = parseJson(loginResponse.text)
@@ -71,7 +68,7 @@ def login():
             session = requests.Session()
             sessionResp = session.get(jsonData["location"],
             headers=headers,
-            verify=False
+            #verify=False
             )
             if (sessionResp.status_code == 200):
                 if sessionResp.cookies["serviceToken"]:
@@ -143,11 +140,10 @@ def getMapURL(mapName):
             headers=headers,
             data=body,
             cookies = Mycookie,
-            proxies={"http": "http://127.0.0.1:8888","https":"http:127.0.0.1:8888"},verify=False
+            #proxies={"http": "http://127.0.0.1:8888","https":"http:127.0.0.1:8888"},verify=False
     )
     if(response.status_code == 200):
         print("woehoe")
-getMapURL("robomap%2F261700991%2F0")    
 #     request(options, function (error, response, body) {
 #       if (!error && response.statusCode === 200) {
 #         var json = JSON.parse(response.body);
@@ -171,3 +167,20 @@ getMapURL("robomap%2F261700991%2F0")
 #     });
 #   });
 # }
+
+def _parser():
+    """Generate argument parser"""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("settings", help="path to the settings file")
+    return parser
+if __name__ == '__main__':
+    args = _parser().parse_args()
+    with open(args.settings, 'r') as stream:
+        try:
+            settings = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+    userName = settings["username"]
+    deviceId = settings["deviceId"]
+    password = settings["password"]
+    getMapURL("robomap%2F261700991%2F0")    
