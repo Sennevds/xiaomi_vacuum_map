@@ -98,12 +98,7 @@ def generateSignature(path, params):
     else:
         paramsArray.append("data=")
 
-    postData = ""
-    for param in paramsArray:
-        if not postData:
-            postData += "&"
-        else:
-            postData += param
+    postData = "&".join(paramsArray)
 
     body = {
     "signature": HashHmacSHA256(postData, signature.decode()),
